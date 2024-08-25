@@ -8,6 +8,7 @@ function Dashboard() {
   const [editingProject, setEditingProject] = useState(null);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,6 +85,10 @@ function Dashboard() {
     navigate('/login');
   };
 
+  const filteredProjects = projects.filter(project =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-200 to-purple-300 p-6">
       <div className="flex justify-between items-center mb-6">
@@ -98,47 +103,59 @@ function Dashboard() {
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
-      <form onSubmit={handleCreateOrEditProject} className="mb-8 bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4 text-purple-700">{editingProject ? 'Edit Project' : 'Create New Project'}</h2>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-bold">Project Name</label>
+      <div className="mb-8 bg-white p-6 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-purple-700">{editingProject ? 'Edit Project' : 'Create New Project'}</h2>
           <input
             type="text"
-            id="name"
-            value={newProject.name}
-            onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-            className="w-full p-3 border border-gray-300 rounded mt-1"
-            placeholder="Enter project name"
+            placeholder="Search projects..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-1/3 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-gray-700 font-bold">Description</label>
-          <textarea
-            id="description"
-            value={newProject.description}
-            onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-            className="w-full p-3 border border-gray-300 rounded mt-1"
-            placeholder="Enter project description"
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="deadline" className="block text-gray-700 font-bold">Deadline</label>
-          <input
-            type="date"
-            id="deadline"
-            value={newProject.deadline}
-            onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
-            className="w-full p-3 border border-gray-300 rounded mt-1"
-          />
-        </div>
-        <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">
-          {editingProject ? 'Update Project' : 'Create Project'}
-        </button>
-      </form>
+
+        <form onSubmit={handleCreateOrEditProject}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700 font-bold">Project Name</label>
+            <input
+              type="text"
+              id="name"
+              value={newProject.name}
+              onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter project name"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-gray-700 font-bold">Description</label>
+            <textarea
+              id="description"
+              value={newProject.description}
+              onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter project description"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="deadline" className="block text-gray-700 font-bold">Deadline</label>
+            <input
+              type="date"
+              id="deadline"
+              value={newProject.deadline}
+              onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 w-full">
+            {editingProject ? 'Update Project' : 'Create Project'}
+          </button>
+        </form>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map(project => (
-          <div key={project._id} className="bg-white p-6 rounded-lg shadow-lg">
+        {filteredProjects.map(project => (
+          <div key={project._id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transform transition duration-300 hover:scale-105">
             <h2 className="text-2xl font-bold text-purple-600">{project.name}</h2>
             <p className="text-gray-700">{project.description}</p>
             <p className="text-sm text-gray-500 mt-2">Deadline: {new Date(project.deadline).toLocaleDateString()}</p>
